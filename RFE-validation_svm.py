@@ -24,27 +24,25 @@ df2 = pd.read_excel(path_to_file)
 df3 = df2.transpose()
 
 path_to_file = '/home/peg/column.xlsx'  # column.xlsx file contain only column names for about 48804 gene names
-df100 = pd.read_excel(path_to_file)
+column_names = pd.read_excel(path_to_file)
 
-df3.columns = df3.iloc[0]  # after trasposing a df2 column names become the first row ,thats why I renamed the column names
-                           # with the firts row
-df4 = df3.drop(df3.index[[0]])     # after that because by renaming I would end up with same
-                                   # column names and and same row values,I droped the first row
+df3.columns = df3.iloc[0] 
+df4 = df3.drop(df3.index[[0]])     
 
-df6=df4.reset_index()              # I wanted to have dataframe format with all index for each row
-df6.columns = df100.iloc[:,0]      # After all, now its time to rename columns
-result = pd.merge(df1,df6,on='METABRIC_ID')
+df6=df4.reset_index()              
+df6.columns = column_names.iloc[:,0]      # rename columns
+df_merge = pd.merge(df1,df6,on='METABRIC_ID')
 
-NON_value = result.isnull().sum()   # how many NON value we have in each column
+NON_value = df_merge.isnull().sum()   # shows NON value in each column
 #print NON_value
-del_NON = result.dropna(how = 'any')  # drop row if you find any NON value in it
+del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value in it
 #print del_NON
 
-Tar = del_NON[del_NON.columns[6]]
-#print Tar
+Target = del_NON[del_NON.columns[6]]
+#print Target
 Descriptor = del_NON.drop(del_NON.columns[[0,2,6]], axis=1)
 arr_descriptors=Descriptor.values
-arr_Target=Tar.values
+arr_Target=Target.values
 
 feature_lst = list(Descriptor.columns.values)
 
@@ -57,35 +55,35 @@ print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
 
 ##############################################
-#validation
+#validation set
 ##############################################
 
 path_to_file = '/home/peg/validation_clinical_cleaned.xlsx'
-dfv1 = pd.read_excel(path_to_file)
+df_v = pd.read_excel(path_to_file)
 
 path_to_file = '/home/peg/validation.xlsx'
-dfv = pd.read_excel(path_to_file)
-dfv2 = dfv.transpose()
+df_v1 = pd.read_excel(path_to_file)
+df_v2 = df_v1.transpose()
 
-dfv2.columns = dfv2.iloc[0]
-dfv3 = dfv2.drop(dfv2.index[[0]])
-dfv4=dfv3.reset_index()
-dfv4.columns = df100.iloc[:,0]
-Merging_2dataframe = pd.merge(dfv1,dfv4,on='METABRIC_ID')
+df_v2.columns = df_v2.iloc[0]
+df_v3 = df_v2.drop(df_v2.index[[0]])
+df_v4=df_v3.reset_index()
+df_v4.columns = column_names.iloc[:,0]
+Merging_2dataframe = pd.merge(df_v,df_v4,on='METABRIC_ID')
 #print 'result.shape =', result.shape
 
 del_NON_val = Merging_2dataframe.dropna(how = 'any')
 #print 'del_NON_val.shape =', del_NON_val.shape
 
-Tar_val = del_NON_val[del_NON_val.columns[6]]
+Target_val = del_NON_val[del_NON_val.columns[6]]
 Test_val = del_NON_val.drop(del_NON_val.columns[[0,2,6]], axis=1)
 #print 'Test_val.shape =', Test_val.shape
 arr_test_val= Test_val.values
-arr_Tar_val = Tar_val.values
+arr_Target_val = Target_val.values
 
 X_val = arr_test_val
-T_val = arr_Tar_val
-Target_val = np.reshape(T_val, (583,)) # when using Kfold cv and using Holdout cv method
+Target_val = arr_Target_val
+Target_reshape = np.reshape(Target_val, (583,))
 Y_val = Target_val
 
 print 'validation:'
@@ -101,7 +99,6 @@ X_train,X_test,y_train,y_test=train_test_split(X, Y, test_size=0.2, random_state
 
 X_test_validation = X_val
 y_test_validation = Y_val
-
 
 reg = svm.SVC(kernel='linear', C=0.001,gamma=0.001)
 rfecv = RFECV(estimator= reg, step=1, cv=StratifiedKFold(4), scoring ='accuracy')
@@ -124,8 +121,6 @@ X_test_rfecv = rfecv.transform(X_test)
 rfecv_model = reg.fit(X_train_rfecv ,y_train)
 y_pred=reg.predict(X_test_rfecv)
 
-print "Final result recursive svm discovery cleaned "
-
 print(reg.score(X_test_rfecv, y_test))
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 print 'rmse =', rmse
@@ -138,8 +133,6 @@ X_test_validation_rfecv = rfecv.transform(X_test_validation)
 
 rfecv_model2 = reg.fit(X_train_rfecv ,y_train)
 y_pred2=reg.predict(X_test_validation_rfecv)
-
-print "Final result recursive svm validation cleaned "
 
 print(reg.score(X_test_validation_rfecv, y_test_validation))
 rmse2 = np.sqrt(mean_squared_error(y_test_validation, y_pred2))
