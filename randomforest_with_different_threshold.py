@@ -28,55 +28,44 @@ df2 = pd.read_excel(path_to_file)
 df3 = df2.transpose()
 
 path_to_file = '/home/pegah/project_discovery/column.xlsx'  # column.xlsx file contain only column names for about 48804 gene names
-df100 = pd.read_excel(path_to_file)
+column_names = pd.read_excel(path_to_file)
 
-#df300 = df200.transpose()
-#df300.columns = df300.iloc[0]
-#df400 = df300.drop(df300.index[[0]])
-#df600=df400.reset_index()
-#df600.columns = df2000.iloc[:,0]
+df3.columns = df3.iloc[0]  
+df4 = df3.drop(df3.index[[0]])     
 
+df6 = df4.reset_index()              
+df6.columns = column_names.iloc[:,0]      
+df_merge = pd.merge(df1,df6,on='METABRIC_ID')
 
-df3.columns = df3.iloc[0]  # after trasposing a df2 column names become the first row ,thats why I renamed the column names
-                           # with the firts row
-df4 = df3.drop(df3.index[[0]])     # after that because by renaming I would end up with same
-                                   # column names and and same row values,I droped the first row
+NON_value = df_merge.isnull().sum()   
+del_NON = df_merge.dropna(how = 'any')  
 
-df6=df4.reset_index()              # I wanted to have dataframe format with all index for each row
-df6.columns = df100.iloc[:,0]      # After all, now its time to rename columns
-result = pd.merge(df1,df6,on='METABRIC_ID')
-
-
-NON_value = result.isnull().sum()   # how many NON value we have in each column
-del_NON = result.dropna(how = 'any')  # drop row if you find any NON value in it
-
-Tar = del_NON[del_NON.columns[6]]
+Target = del_NON[del_NON.columns[6]]
 Descriptor = del_NON.drop(del_NON.columns[[0,2,6]], axis=1)
-arr_descriptors=Descriptor.values
-arr_Target=Tar.values
+arr_descriptors = Descriptor.values
+arr_Target = Target.values
 
 feature_lst = list(Descriptor.columns.values)
 #print feature_list
 
 X = arr_descriptors
 T = arr_Target
-Target = np.reshape(T, (554,1))
-Y = Target
+Target_reshape = np.reshape(T, (554,1))
+Y = Target_reshape
 
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
-
-#######################################################
-# Feature importance
-#######################################################
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.3,random_state=0)
 clf = RandomForestClassifier(n_estimators=100, random_state=0 )
 clf = clf.fit(X_train, y_train)
 
-##################################################################
-# New random forest with only most important variables
-##################################################################
+############################################################
+# random forest with only most important variables
+#############################################################
+
+# After calculating the averge importance of all the features, we can build a list with different threshold value to choose differnt subset of features 
+#and check the performance of the model
 
 c =[ 0.0001,0.0004,0.0007,0.001,0.0013,0.0016,0.0019,0.0022,0.0025,0.0028,0.0031]
 
@@ -87,8 +76,6 @@ c =[ 0.0001,0.0004,0.0007,0.001,0.0013,0.0016,0.0019,0.0022,0.0025,0.0028,0.0031
 #for feature_list_index in sfm.get_support(indices=True):
 #   numberfeature.append(feature_list_index)
 #print len(numberfeature)
-
-
 
 for i in c:
    print "threshold", i
