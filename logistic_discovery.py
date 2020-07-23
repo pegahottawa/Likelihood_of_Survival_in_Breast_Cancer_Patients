@@ -29,44 +29,37 @@ path_to_file = '/home/pegah/project_discovery/gene_ex.xlsx'
 df2 = pd.read_excel(path_to_file)
 df3 = df2.transpose()
 
-
 path_to_file = '/home/pegah/project_discovery/column.xlsx'  # column.xlsx file contain only column names for about 48804 gene names
-df100 = pd.read_excel(path_to_file)
+column_names = pd.read_excel(path_to_file)
 
-df3.columns = df3.iloc[0]  # after trasposing a df2 column names become the first row ,thats why I renamed the column names with the firts row
-df4 = df3.drop(df3.index[[0]])     # after that because by renaming I would end up with same
-                                   # column names and and same row values,I droped the first row
+df3.columns = df3.iloc[0]  
+df4 = df3.drop(df3.index[[0]])     
 
-df6=df4.reset_index()              # I wanted to have dataframe format with all index for each row
-df6.columns = df100.iloc[:,0]      # After all, now its time to rename columns
-result = pd.merge(df1,df6,on='METABRIC_ID')
+df6=df4.reset_index()             
+df6.columns = columns_names.iloc[:,0]     
+df_merge = pd.merge(df1,df6,on='METABRIC_ID')
 #print 'result.shape =', result.shape
 
-
-del_NON = result.dropna(how = 'any')  # drop row if you find any NON value in it
+del_NON = df_merge.dropna(how = 'any')  # drop rows with any NON value
 #print del_NON
 print 'del_NON.shape =', del_NON.shape
 
-
-Tar = del_NON[del_NON.columns[6]]
-#print Tar
+Target = del_NON[del_NON.columns[6]]
+#print Target
 Descriptor = del_NON.drop(del_NON.columns[[0,1,2,6]], axis=1)
 #print Descriptor
 #print 'Descriptor.shape =', Descriptor.shape
 arr_descriptors=Descriptor.values
-arr_Target=Tar.values
-
+arr_Target=Target.values
 
 X = arr_descriptors
 T = arr_Target
 #Target = np.reshape(T, (554,1)) # when not using Kfold cv and using Holdout cv method
-Target = np.reshape(T, (533,)) # when using kfold cross validation you need this sort of reshape
-Y = Target
+Target_reshape = np.reshape(T, (533,)) 
+Y = Target_reshape
 
 X = preprocessing.scale(X)
 Y = preprocessing.scale(Y)
-
-
 
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
@@ -75,17 +68,11 @@ print 'Y.shape =', Y.shape
 #Applying Logistic classifier
 #######################################################
 
-X_train,X_test,y_train,y_test=cross_validation.train_test_split(X, Y,random_state=0)#random numbers0= obtain the
+X_train,X_test,y_train,y_test=cross_validation.train_test_split(X, Y,random_state=0)   #random_state=0  obtain the
 #same split everytime you run your script , dose not shuffle order of test and train set .
-
-##############################################
-#k-foldCross validation method(for this you do not need to use fit and predict method)
-##############################################
 
 print 'X_train.shape =', X_train.shape
 print 'y_train.shape =', y_train.shape
-
-print "logisticcleaned result"
 
 logreg = LogisticRegression()
 #logreg.fit(X_train,y_train)
