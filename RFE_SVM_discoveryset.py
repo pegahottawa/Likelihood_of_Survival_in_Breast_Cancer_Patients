@@ -26,7 +26,7 @@ df3 = df2.transpose()
 path_to_file = '/home/peg/column.xlsx'  # column.xlsx file contain only column names for about 48804 gene names
 column_names = pd.read_excel(path_to_file)
 
-df3.columns = df3.iloc[0]  
+df3.columns = df3.iloc[0]       #renamed the column names with the firts row
 df4 = df3.drop(df3.index[[0]])     
 
 df6 = df4.reset_index()              
@@ -37,6 +37,10 @@ NON_value = df_merge.isnull().sum()
 #print NON_value
 del_NON = df_merge.dropna(how = 'any') 
 #print del_NON
+
+#####################################
+# Target and descriptor selection
+#####################################
 
 Target = del_NON[del_NON.columns[6]]
 #print Tar
@@ -59,7 +63,7 @@ print 'Y.shape =', Y.shape
 # RFE with SVM and Cross_validation
 #######################################
 
-X_train,X_test,y_train,y_test=train_test_split(X, Y, random_state=0)
+X_train,X_test,y_train,y_test = train_test_split(X, Y, random_state=0)  #fixed integers random_state value is to make the outcome consistent across each time calls 
 
 print 'X_train.shape =', X_train.shape
 print 'y_train.shape =', y_train.shape
@@ -77,7 +81,7 @@ print("Num Features: %s" % (rfecv.n_features_))
 bestfeature = []
 for feature in zip(feature_lst, rfecv.ranking_):
    bestfeature.append(feature)
-print "done appending"
+
 
 Output = [item for item in bestfeature if item[1] == 1]
 print(Output)
@@ -88,8 +92,9 @@ X_test_rfecv = rfecv.transform(X_test)
 rfecv_model = reg.fit(X_train_rfecv ,y_train)
 y_pred=reg.predict(X_test_rfecv)
 
-print(reg.score(X_test_rfecv, y_test))
-rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-print 'rmse =', rmse
+print "Accuracy is", accuracy_score(y_test,y_pred)*100
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+
 
 
