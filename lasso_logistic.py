@@ -30,16 +30,19 @@ df4 = df3.drop(df3.index[[0]])
 
 df6 = df4.reset_index()              
 df6.columns = column_names.iloc[:,0]      
-df_merge = pd.merge(df1,df6,on='METABRIC_ID')
-
+df_merge = pd.merge(df1,df6,on ='METABRIC_ID')
 
 NON_value = df_merge.isnull().sum()   # how many NON value we have in each column
-del_NON = df_merge.dropna(how = 'any')  # drop row if you find any NON value in it
+del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value
+
+#####################################
+# Target and descriptor selection
+#####################################
 
 Target = del_NON[del_NON.columns[6]]
 Descriptor = del_NON.drop(del_NON.columns[[0,1,2,6]], axis=1)
-arr_descriptors=Descriptor.values
-arr_Target=Target.values
+arr_descriptors = Descriptor.values
+arr_Target = Target.values
 
 feature_lst = list(Descriptor.columns.values)
 X = arr_descriptors
@@ -50,6 +53,9 @@ Y = Target_reshape
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
 
+#################################
+# Lasso for Logistic regression
+#################################
 
 X_train,X_test,y_train,y_test=train_test_split(X, Y,random_state=0)
 
