@@ -31,7 +31,7 @@ df4 = df3.drop(df3.index[[0]])
 
 df6 = df4.reset_index()              
 df6.columns = column_names.iloc[:,0]      
-df_merge = pd.merge(df1,df6,on='METABRIC_ID')
+df_merge = pd.merge(df1,df6,on ='METABRIC_ID')
 
 NON_value = df_merge.isnull().sum()   
 #print NON_value
@@ -81,7 +81,6 @@ print("Num Features: %s" % (rfecv.n_features_))
 bestfeature = []
 for feature in zip(feature_lst, rfecv.ranking_):
    bestfeature.append(feature)
-
 
 Output = [item for item in bestfeature if item[1] == 1]
 print(Output)
