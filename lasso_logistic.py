@@ -64,7 +64,7 @@ lambda =[1e-2,2,5,10,20,30,40,50,60,70,80,90,100,150,200]  # increasing the pena
 for i in lambda:
    sel= SelectFromModel(LogisticRegression(C = i, penalty ='l1'))  # L1 regularisation shrink feature coefficients to zero
    sel.fit(X_train, y_train)
-   X_important_train = sel.transform(X_train)
+   X_important_train = sel.transform(X_train)   # Transform the data to both training and test to create a new dataset containing only the most important features
    X_important_test = sel.transform(X_test)
    sel_important = LogisticRegression()
    scores =cross_val_score( sel_important , X_train, y_train, cv=5)
