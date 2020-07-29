@@ -32,7 +32,7 @@ df4 = df3.drop(df3.index[[0]])
 
 df6=df4.reset_index()              
 df6.columns = column_names.iloc[:,0]      
-df_merge = pd.merge(df1,df6,on='METABRIC_ID')
+df_merge = pd.merge(df1,df6,on ='METABRIC_ID')
 
 NON_value = df_merge.isnull().sum()   
 del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value
@@ -42,7 +42,7 @@ del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value
 #####################################
 
 Target = del_NON[del_NON.columns[6]]
-Descriptor = del_NON.drop(del_NON.columns[[0,2,6]], axis=1)
+Descriptor = del_NON.drop(del_NON.columns[[0,2,6]], axis = 1)
 arr_descriptors = Descriptor.values
 arr_Target = Target.values
 
@@ -54,7 +54,7 @@ Y = Target_reshape
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
 
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.3,random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.3, random_state = 0)
 
 # Number of trees in forest
 n_estimators = [int(x) for x in np.linspace(start = 1, stop = 100, num = 10)]
@@ -81,10 +81,10 @@ random_grid = {'n_estimators': n_estimators,
                'min_samples_split': min_samples_split,
                'min_samples_leaf': min_samples_leaf,
                'bootstrap': bootstrap}
-
 rf = RandomForestClassifier()
 rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid,cv = 3,
-                               n_iter = 100,  random_state=42, n_jobs = -1)
+                               n_iter = 100,  random_state=42, n_jobs = -1)       # n_jobs = -1 means using all processors to run jobs in parallel.
+                                                                                  # n_iter = Number of parameter settings that are sampled.  
 
 scores =cross_val_score( rf_random, X_train, y_train, cv=3)
 print scores
