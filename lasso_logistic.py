@@ -53,50 +53,28 @@ Y = Target_reshape
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
 
-#################################
-# Lasso for Logistic regression
-#################################
+######################################################################
+# Selecting features using Lasso regularisation using SelectFromModel
+######################################################################
 
 X_train,X_test,y_train,y_test=train_test_split(X, Y,random_state=0)
 
-# first we want to try different parameter C for the model
+lambda =[1e-2,2,5,10,20,30,40,50,60,70,80,90,100,150,200]  # increasing the penalisation Lambda will increase the number of features removed
 
-#a =[1e-2,2,5,10,20,30,40,50,60,70,80,90,100,150,200,210.220,230,240,250,260,270,290,300,320,330,340,360,370,380,390,400]
-
-#for i in a:
-#   print i
-#   sel= SelectFromModel(LogisticRegression(C=i, penalty='l1'))
-#   sel.fit(X_train, y_train)
-#   X_important_train = sel.transform(X_train)
-#   X_important_test = sel.transform(X_test)
-#   sel_important = LogisticRegression()
-#   scores =cross_val_score( sel_important , X_train, y_train, cv=5)
-#   print scores
-#   print("Average 5-Fold CV Score: {}".format(np.mean(scores)))
-#   print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))
-
-#numberfeature=[]
-#for feature_list_index in sel.get_support(indices=True):
-#   print(feature_lst[feature_list_index])
-#   numberfeature.append(feature_list_index)
-#print len(numberfeature)
-
-# Apply the best paramater C
-
-sel= SelectFromModel(LogisticRegression(C=1e-2, penalty='l1'))
-sel.fit(X_train, y_train)
-X_important_train = sel.transform(X_train)
-X_important_test = sel.transform(X_test)
-sel_important = LogisticRegression()
-scores =cross_val_score( sel_important , X_train, y_train, cv=5)
-print scores
-print("Average 5-Fold CV Score: {}".format(np.mean(scores)))
-print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))
+for i in lambda:
+   sel= SelectFromModel(LogisticRegression(C = i, penalty ='l1'))  # L1 regularisation shrink feature coefficients to zero
+   sel.fit(X_train, y_train)
+   X_important_train = sel.transform(X_train)
+   X_important_test = sel.transform(X_test)
+   sel_important = LogisticRegression()
+   scores =cross_val_score( sel_important , X_train, y_train, cv=5)
+   print scores
+   print("Average 5-Fold CV Score: {}".format(np.mean(scores)))
+   print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))
 
 numberfeature=[]
-for feature_list_index in sel.get_support(indices=True):
-#   print(feature_lst[feature_list_index])
+for feature_list_index in sel.get_support(indices=True):  # to have a list of important feature with thier names
    numberfeature.append(feature_list_index)
-print len(numberfeature)
+#print len(numberfeature)
 print numberfeature
 
