@@ -70,7 +70,7 @@ for i in lambda:
    scores =cross_val_score( sel_important , X_train, y_train, cv=5)
    print scores
    print("Average 5-Fold CV Score: {}".format(np.mean(scores)))
-   print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))
+   print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))  # Totall number of features which coefficient was shrank to zero
 
 # print the names of the most important features
 for feature_list_index in sel.get_support(indices=True):  
