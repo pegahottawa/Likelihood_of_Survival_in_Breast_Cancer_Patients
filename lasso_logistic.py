@@ -72,9 +72,8 @@ for i in lambda:
    print("Average 5-Fold CV Score: {}".format(np.mean(scores)))
    print('features with coefficients shrank to zero: {}'.format(np.sum(sel.estimator_.coef_ == 0)))
 
-numberfeature=[]
-for feature_list_index in sel.get_support(indices=True):  # to have a list of important feature with thier names
-   numberfeature.append(feature_list_index)
-#print len(numberfeature)
-print numberfeature
+# print the names of the most important features
+for feature_list_index in sel.get_support(indices=True):  
+   print(feature_lst[feature_list_index])
+   
 
