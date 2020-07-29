@@ -79,13 +79,13 @@ print " time for Ranking "
 print("Num Features: %s" % (rfecv.n_features_))
 
 bestfeature = []
-for feature in zip(feature_lst, rfecv.ranking_):
+for feature in zip(feature_lst, rfecv.ranking_):   # Rank the importance of all features
    bestfeature.append(feature)
 
-Output = [item for item in bestfeature if item[1] == 1]
+Output = [item for item in bestfeature if item[1] == 1]   # get a list of most impotant features
 print(Output)
 
-X_train_rfecv = rfecv.transform(X_train)
+X_train_rfecv = rfecv.transform(X_train)  # Transform the data to both training and test to create a new dataset containing only the most important features
 X_test_rfecv = rfecv.transform(X_test)
 
 rfecv_model = reg.fit(X_train_rfecv ,y_train)
