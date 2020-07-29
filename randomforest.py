@@ -82,13 +82,13 @@ random_grid = {'n_estimators': n_estimators,
                'min_samples_leaf': min_samples_leaf,
                'bootstrap': bootstrap}
 rf = RandomForestClassifier()
-rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid,cv = 3,
-                               n_iter = 100,  random_state=42, n_jobs = -1)       # n_jobs = -1 means using all processors to run jobs in parallel.
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, cv = 3,
+                               n_iter = 100, random_state = 42, n_jobs = -1)      # n_jobs = -1 means using all processors to run jobs in parallel.
                                                                                   # n_iter = Number of parameter settings that are sampled.  
 
-scores =cross_val_score( rf_random, X_train, y_train, cv=3)
+scores = cross_val_score(rf_random, X_train, y_train, cv = 3)
 print scores
-print("Average 3-Fold CV Score: {}".format(np.mean(scores)))
+print("Average 3-Fold CV Score: {}".format(np.mean(scores)))   # Calculate average of all the different experiments in cross validation 
 print (rf_random.best_params_)
 
 
