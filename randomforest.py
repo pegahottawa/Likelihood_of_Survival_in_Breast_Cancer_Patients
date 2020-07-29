@@ -22,7 +22,6 @@ df1 = pd.read_excel(path_to_file)
 
 path_to_file = '/home/pegah/project_discovery/gene_ex.xlsx'
 df2 = pd.read_excel(path_to_file)
-
 df3 = df2.transpose()
 
 path_to_file = '/home/pegah/project_discovery/column.xlsx'  # column.xlsx file contain only column names for about 48804 gene names
@@ -36,7 +35,11 @@ df6.columns = column_names.iloc[:,0]
 df_merge = pd.merge(df1,df6,on='METABRIC_ID')
 
 NON_value = df_merge.isnull().sum()   
-del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value in it
+del_NON = df_merge.dropna(how = 'any')  # drop rows with NON value
+
+#####################################
+# Target and descriptor selection
+#####################################
 
 Target = del_NON[del_NON.columns[6]]
 Descriptor = del_NON.drop(del_NON.columns[[0,2,6]], axis=1)
@@ -51,9 +54,9 @@ Y = Target_reshape
 print 'X.shape =', X.shape
 print 'Y.shape =', Y.shape
 
-
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.3,random_state=0)
 
+# Number of trees in forest
 n_estimators = [int(x) for x in np.linspace(start = 1, stop = 100, num = 10)]
 
 # Number of features to consider at every split
@@ -83,10 +86,6 @@ rf = RandomForestClassifier()
 rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid,cv = 3,
                                n_iter = 100,  random_state=42, n_jobs = -1)
 
-# Fit the random search model
-#rf_random.fit(X_train, y_train)
-#y_pred = rf_random.predict(X_test)
-#print "Accuracy test ", accuracy_score(y_pred, y_test) * 100
 scores =cross_val_score( rf_random, X_train, y_train, cv=3)
 print scores
 print("Average 3-Fold CV Score: {}".format(np.mean(scores)))
